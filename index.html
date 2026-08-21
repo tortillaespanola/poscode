@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Caja · Evento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="topbar">
-  <div class="brand">
-    <span class="brand-mark">🍳</span>
-    <span class="brand-name">CAJA<b>EVENTO</b></span>
-  </div>
-  <button id="btn-ajustes" class="icon-btn" aria-label="Ajustes">⚙</button>
+  <span class="brand">CAJA<span class="brand-accent">EVENTO</span></span>
+  <button id="btn-ajustes" class="icon-btn" aria-label="Ajustes">[ AJUSTES ]</button>
 </header>
 
 <main id="app">
@@ -29,7 +29,7 @@
         <span class="p-nombre">Rebujito</span>
         <span class="p-precio">6 CHF</span>
       </button>
-      <button class="producto-btn producto-btn--ancho" data-nombre="Tortilla Entera" data-precio="39">
+      <button class="producto-btn" data-nombre="Tortilla Entera" data-precio="39">
         <span class="p-nombre">Tortilla Entera</span>
         <span class="p-precio">39 CHF</span>
       </button>
@@ -37,7 +37,7 @@
 
     <div class="ticket">
       <div class="ticket-header">
-        <span>Ticket actual</span>
+        <span class="eyebrow">Ticket actual</span>
         <button id="btn-vaciar-ticket" class="link-btn">Vaciar</button>
       </div>
       <ul id="ticket-lista" class="ticket-lista">
@@ -49,9 +49,29 @@
       </div>
     </div>
 
+    <p class="eyebrow-divider">── MÉTODO DE PAGO ──</p>
     <div class="pago-botones">
-      <button id="btn-pago-cash" class="pago-btn pago-btn--cash" disabled>💶 Cash</button>
-      <button id="btn-pago-twint" class="pago-btn pago-btn--twint" disabled>📱 Twint</button>
+      <button id="btn-pago-cash" class="pago-btn" disabled>Cash</button>
+      <button id="btn-pago-twint" class="pago-btn" disabled>Twint</button>
+    </div>
+    <button id="btn-pago-dividir" class="link-btn link-btn--centrado" disabled>Dividir pago (Cash + Twint)</button>
+
+    <div id="panel-dividir" class="panel-dividir oculto">
+      <div class="dividir-fila">
+        <label for="input-dividir-cash">Cash</label>
+        <input id="input-dividir-cash" type="number" min="0" step="0.01" inputmode="decimal">
+        <span class="dividir-unidad">CHF</span>
+      </div>
+      <div class="dividir-fila">
+        <label for="input-dividir-twint">Twint</label>
+        <input id="input-dividir-twint" type="number" min="0" step="0.01" inputmode="decimal">
+        <span class="dividir-unidad">CHF</span>
+      </div>
+      <p id="dividir-estado" class="dividir-estado"></p>
+      <div class="dividir-acciones">
+        <button id="btn-dividir-cancelar" class="btn-secundario">Cancelar</button>
+        <button id="btn-dividir-confirmar" class="btn-principal" disabled>Confirmar pago dividido</button>
+      </div>
     </div>
   </section>
 
@@ -59,7 +79,7 @@
   <section id="pantalla-historial" class="pantalla">
     <div class="seccion-header">
       <h2>Historial de ventas</h2>
-      <button id="btn-refrescar-historial" class="link-btn">↻ Actualizar</button>
+      <button id="btn-refrescar-historial" class="link-btn">Actualizar</button>
     </div>
     <ul id="historial-lista" class="historial-lista"></ul>
   </section>
@@ -68,7 +88,7 @@
   <section id="pantalla-cierre" class="pantalla">
     <div class="seccion-header">
       <h2>Cierre de caja</h2>
-      <button id="btn-refrescar-cierre" class="link-btn">↻ Actualizar</button>
+      <button id="btn-refrescar-cierre" class="link-btn">Actualizar</button>
     </div>
 
     <div class="resumen-cierre">
@@ -77,11 +97,11 @@
         <span id="cierre-num-ventas">0</span>
       </div>
       <div class="resumen-fila">
-        <span>💶 Total Cash</span>
+        <span>Total Cash</span>
         <span id="cierre-total-cash">0 CHF</span>
       </div>
       <div class="resumen-fila">
-        <span>📱 Total Twint</span>
+        <span>Total Twint</span>
         <span id="cierre-total-twint">0 CHF</span>
       </div>
       <div class="resumen-fila resumen-fila--total">
@@ -90,7 +110,7 @@
       </div>
     </div>
 
-    <button id="btn-cerrar-caja" class="btn-principal btn-peligro">Cerrar caja y poner a cero</button>
+    <button id="btn-cerrar-caja" class="btn-principal">Cerrar caja y poner a cero</button>
 
     <div class="seccion-header seccion-header--espaciada">
       <h2>Cierres anteriores</h2>
@@ -130,15 +150,9 @@
 </main>
 
 <nav class="tabbar">
-  <button class="tab-btn activa" data-pantalla="venta">
-    <span class="tab-icon">🧾</span><span>Venta</span>
-  </button>
-  <button class="tab-btn" data-pantalla="historial">
-    <span class="tab-icon">📋</span><span>Historial</span>
-  </button>
-  <button class="tab-btn" data-pantalla="cierre">
-    <span class="tab-icon">🔒</span><span>Caja</span>
-  </button>
+  <button class="tab-btn activa" data-pantalla="venta">Venta</button>
+  <button class="tab-btn" data-pantalla="historial">Historial</button>
+  <button class="tab-btn" data-pantalla="cierre">Caja</button>
 </nav>
 
 <div id="toast" class="toast"></div>
