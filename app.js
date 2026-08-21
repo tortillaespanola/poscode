@@ -777,6 +777,10 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
 
   setCargando(true);
   try {
+    // El cierre incluye también las ventas anuladas sin cierre_id (aunque no
+    // sumen en los totales) para que queden agrupadas en su sesión y no se
+    // muestren como "sesión actual" para siempre en el Historial.
+    const sinCerrar = cacheVentas.data.filter((v) => !v.cierre_id);
     const cierre = {
       id: `c_${Date.now()}`,
       fecha: new Date().toISOString(),
@@ -784,7 +788,7 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
       total_twint: totalTwint,
       total,
       num_ventas: pendientes.length,
-      venta_ids: pendientes.map((v) => v.id),
+      venta_ids: sinCerrar.map((v) => v.id),
     };
 
     await asegurarCacheCierres();
