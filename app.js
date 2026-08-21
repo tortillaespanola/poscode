@@ -487,7 +487,7 @@ function ocultarModalDividir() {
 function mostrarModalDividir() {
   const total = totalTicket();
   document.getElementById("dividir-total-valor").textContent = `${total} CHF`;
-  document.getElementById("input-dividir-cash").value = total;
+  document.getElementById("input-dividir-cash").value = 0;
   document.getElementById("input-dividir-twint").value = 0;
   document.getElementById("input-dividir-tarjeta").value = 0;
   document.getElementById("modal-dividir").classList.remove("oculto");
