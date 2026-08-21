@@ -563,6 +563,24 @@ document.getElementById("input-dividir-cash").addEventListener("input", validarD
 document.getElementById("input-dividir-twint").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-tarjeta").addEventListener("input", validarDividir);
 
+// Evita el "0" pegado a la izquierda al escribir en un input que arranca en
+// 0 (p. ej. 0 + "25" tecleado queda como "025" aunque el valor numérico ya
+// fuera correcto): al enfocar se vacía si estaba en 0, y si se deja vacío
+// al perder el foco vuelve a mostrar 0 por defecto.
+function evitarCeroInicial(input) {
+  input.addEventListener("focus", () => {
+    if (input.value === "0") input.value = "";
+  });
+  input.addEventListener("blur", () => {
+    if (input.value.trim() === "") input.value = "0";
+  });
+}
+[
+  document.getElementById("input-dividir-cash"),
+  document.getElementById("input-dividir-twint"),
+  document.getElementById("input-dividir-tarjeta"),
+].forEach(evitarCeroInicial);
+
 // Botón "Resto": rellena ese campo con lo que falta para llegar al total,
 // para no tener que calcular a mano ni dejar el reparto desincronizado
 // (p. ej. al anotar el efectivo recibido sin actualizar el campo Cash de arriba).
