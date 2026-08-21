@@ -48,5 +48,20 @@
     "metodo_pago": "Cash",
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_test3",
+    "fecha": "2026-08-21T11:00:00.000Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 6,
+    "metodo_pago": "Twint",
+    "anulada": false,
+    "cierre_id": null
   }
 ]
