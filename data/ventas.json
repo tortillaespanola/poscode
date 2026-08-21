@@ -46,7 +46,7 @@
     ],
     "total": 51,
     "metodo_pago": "Cash",
-    "anulada": false,
+    "anulada": true,
     "cierre_id": null
   }
 ]
