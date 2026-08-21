@@ -1,11 +1,1 @@
-[
-  {
-    "id": "v_test_debug",
-    "fecha": "2026-08-21T10:30:00.000Z",
-    "items": [{"nombre": "Pincho", "precio": 6, "cantidad": 1}],
-    "total": 6,
-    "metodo_pago": "Cash",
-    "anulada": false,
-    "cierre_id": null
-  }
-]
+[]
