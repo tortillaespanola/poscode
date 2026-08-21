@@ -202,5 +202,31 @@
     ],
     "anulada": false,
     "cierre_id": "c_1787312696542"
+  },
+  {
+    "id": "v_1787317524197_522yt",
+    "fecha": "2026-08-21T13:05:24.197Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 1
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 12,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 12
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
