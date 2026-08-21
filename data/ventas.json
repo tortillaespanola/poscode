@@ -648,7 +648,7 @@
         "importe": 1
       }
     ],
-    "anulada": false,
+    "anulada": true,
     "cierre_id": null
   }
 ]
