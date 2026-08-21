@@ -291,5 +291,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_1787317944876_h6om2",
+    "fecha": "2026-08-21T13:12:24.876Z",
+    "items": [
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 3
+      }
+    ],
+    "total": 18,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 18
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
