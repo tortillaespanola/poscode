@@ -447,5 +447,35 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_1787324389591_68rzn",
+    "fecha": "2026-08-21T14:59:49.591Z",
+    "items": [
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 4
+      },
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 1
+      }
+    ],
+    "total": 63,
+    "metodo_pago": "Mixto",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 50
+      },
+      {
+        "metodo": "Tarjeta",
+        "importe": 13
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
