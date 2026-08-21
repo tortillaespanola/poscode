@@ -524,5 +524,36 @@
     ],
     "anulada": true,
     "cierre_id": null
+  },
+  {
+    "id": "v_b713f99b-e7ab-4a10-92ec-79a06006c1ea",
+    "fecha": "2026-08-21T18:45:24.709Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 2
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      },
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 1
+      }
+    ],
+    "total": 57,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 57
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
