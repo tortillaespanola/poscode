@@ -48,31 +48,6 @@
         <span id="ticket-total-valor">0 CHF</span>
       </div>
     </div>
-
-    <p class="eyebrow-divider">── MÉTODO DE PAGO ──</p>
-    <div class="pago-botones">
-      <button id="btn-pago-cash" class="pago-btn" disabled>Cash</button>
-      <button id="btn-pago-twint" class="pago-btn" disabled>Twint</button>
-    </div>
-    <button id="btn-pago-dividir" class="link-btn link-btn--centrado" disabled>Dividir pago (Cash + Twint)</button>
-
-    <div id="panel-dividir" class="panel-dividir oculto">
-      <div class="dividir-fila">
-        <label for="input-dividir-cash">Cash</label>
-        <input id="input-dividir-cash" type="number" min="0" step="0.01" inputmode="decimal">
-        <span class="dividir-unidad">CHF</span>
-      </div>
-      <div class="dividir-fila">
-        <label for="input-dividir-twint">Twint</label>
-        <input id="input-dividir-twint" type="number" min="0" step="0.01" inputmode="decimal">
-        <span class="dividir-unidad">CHF</span>
-      </div>
-      <p id="dividir-estado" class="dividir-estado"></p>
-      <div class="dividir-acciones">
-        <button id="btn-dividir-cancelar" class="btn-secundario">Cancelar</button>
-        <button id="btn-dividir-confirmar" class="btn-principal" disabled>Confirmar pago dividido</button>
-      </div>
-    </div>
   </section>
 
   <!-- PANTALLA: HISTORIAL -->
@@ -149,11 +124,84 @@
 
 </main>
 
+<!-- Barra de pago fija (solo visible en pantalla Venta) -->
+<div id="pago-fija" class="pago-fija">
+  <p class="eyebrow-divider">── MÉTODO DE PAGO ──</p>
+  <div class="pago-botones">
+    <button id="btn-pago-cash" class="pago-btn" disabled>Cash</button>
+    <button id="btn-pago-twint" class="pago-btn" disabled>Twint</button>
+  </div>
+  <button id="btn-pago-dividir" class="link-btn link-btn--centrado" disabled>Dividir pago (Cash + Twint)</button>
+</div>
+
 <nav class="tabbar">
   <button class="tab-btn activa" data-pantalla="venta">Venta</button>
   <button class="tab-btn" data-pantalla="historial">Historial</button>
   <button class="tab-btn" data-pantalla="cierre">Caja</button>
 </nav>
+
+<!-- MODAL: cobro en Cash (pago único) -->
+<div id="modal-cash" class="modal-backdrop oculto">
+  <div class="modal-cobro">
+    <p class="eyebrow">Cobro en Cash</p>
+    <div class="cobro-total-row">
+      <span>Total a cobrar</span>
+      <span id="cash-total-valor">0 CHF</span>
+    </div>
+    <label class="campo-cobro">
+      <span>Recibido (opcional)</span>
+      <input id="input-cash-recibido" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Importe entregado">
+    </label>
+    <div class="importes-rapidos" data-target="cash">
+      <button type="button" class="importe-rapido-btn" data-importe="10">10</button>
+      <button type="button" class="importe-rapido-btn" data-importe="20">20</button>
+      <button type="button" class="importe-rapido-btn" data-importe="50">50</button>
+      <button type="button" class="importe-rapido-btn" data-importe="100">100</button>
+    </div>
+    <p id="cash-cambio" class="cobro-cambio"></p>
+    <div class="dividir-acciones">
+      <button id="btn-cash-cancelar" class="btn-secundario">Cancelar</button>
+      <button id="btn-cash-confirmar" class="btn-principal">Confirmar venta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: pago dividido -->
+<div id="modal-dividir" class="modal-backdrop oculto">
+  <div class="modal-cobro">
+    <p class="eyebrow">Pago dividido</p>
+    <div class="dividir-fila">
+      <label for="input-dividir-cash">Cash</label>
+      <input id="input-dividir-cash" type="number" min="0" step="0.01" inputmode="decimal">
+      <span class="dividir-unidad">CHF</span>
+    </div>
+
+    <div id="bloque-cambio-dividir" class="bloque-cambio-dividir oculto">
+      <label class="campo-cobro-mini">
+        <span>Recibido en efectivo (opcional)</span>
+        <input id="input-dividir-recibido" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Importe entregado">
+      </label>
+      <div class="importes-rapidos" data-target="dividir">
+        <button type="button" class="importe-rapido-btn" data-importe="10">10</button>
+        <button type="button" class="importe-rapido-btn" data-importe="20">20</button>
+        <button type="button" class="importe-rapido-btn" data-importe="50">50</button>
+        <button type="button" class="importe-rapido-btn" data-importe="100">100</button>
+      </div>
+      <p id="dividir-cambio" class="cobro-cambio"></p>
+    </div>
+
+    <div class="dividir-fila">
+      <label for="input-dividir-twint">Twint</label>
+      <input id="input-dividir-twint" type="number" min="0" step="0.01" inputmode="decimal">
+      <span class="dividir-unidad">CHF</span>
+    </div>
+    <p id="dividir-estado" class="dividir-estado"></p>
+    <div class="dividir-acciones">
+      <button id="btn-dividir-cancelar" class="btn-secundario">Cancelar</button>
+      <button id="btn-dividir-confirmar" class="btn-principal" disabled>Confirmar pago dividido</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast" class="toast"></div>
 <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>

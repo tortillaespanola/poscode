@@ -265,6 +265,7 @@ function mostrarPantalla(nombre) {
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.classList.toggle("activa", btn.dataset.pantalla === nombre);
   });
+  document.getElementById("pago-fija").classList.toggle("activa", nombre === "venta");
   if (nombre === "historial") refrescarHistorial();
   if (nombre === "cierre") refrescarCierre();
 }
@@ -276,6 +277,7 @@ document.getElementById("btn-ajustes").addEventListener("click", () => {
   document.querySelectorAll(".pantalla").forEach((p) => p.classList.remove("activa"));
   document.getElementById("pantalla-ajustes").classList.add("activa");
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("activa"));
+  document.getElementById("pago-fija").classList.remove("activa");
 });
 
 /* ---------------- Toast / loading ---------------- */
@@ -328,7 +330,10 @@ function renderTicket() {
   document.getElementById("btn-pago-cash").disabled = total === 0;
   document.getElementById("btn-pago-twint").disabled = total === 0;
   document.getElementById("btn-pago-dividir").disabled = total === 0;
-  if (total === 0) ocultarPanelDividir();
+  if (total === 0) {
+    ocultarModalCash();
+    ocultarModalDividir();
+  }
 }
 
 document.querySelectorAll(".producto-btn").forEach((btn) => {
@@ -396,7 +401,8 @@ async function registrarVenta(pagos) {
     );
     ticket = [];
     renderTicket();
-    ocultarPanelDividir();
+    ocultarModalCash();
+    ocultarModalDividir();
     mostrarToast(`Venta registrada: ${total} CHF (${metodoPago})`);
   } catch (e) {
     console.error(e);
@@ -406,37 +412,113 @@ async function registrarVenta(pagos) {
   }
 }
 
-document.getElementById("btn-pago-cash").addEventListener("click", () => {
+/* ---------------- Cobro en Cash (con cambio) ---------------- */
+
+function ocultarModalCash() {
+  document.getElementById("modal-cash").classList.add("oculto");
+}
+
+function mostrarModalCash() {
+  document.getElementById("cash-total-valor").textContent = `${totalTicket()} CHF`;
+  document.getElementById("input-cash-recibido").value = "";
+  document.getElementById("modal-cash").classList.remove("oculto");
+  actualizarCambioCash();
+}
+
+document.getElementById("btn-pago-cash").addEventListener("click", mostrarModalCash);
+document.getElementById("btn-cash-cancelar").addEventListener("click", ocultarModalCash);
+
+function actualizarCambioCash() {
+  const total = totalTicket();
+  const recibidoStr = document.getElementById("input-cash-recibido").value;
+  const cambioEl = document.getElementById("cash-cambio");
+  const btnConfirmar = document.getElementById("btn-cash-confirmar");
+
+  if (recibidoStr === "") {
+    cambioEl.textContent = "";
+    cambioEl.className = "cobro-cambio";
+    btnConfirmar.disabled = false;
+    return;
+  }
+
+  const recibido = Number(recibidoStr) || 0;
+  if (recibido < total) {
+    cambioEl.textContent = `Falta importe: ${(total - recibido).toFixed(2)} CHF.`;
+    cambioEl.className = "cobro-cambio error";
+    btnConfirmar.disabled = true;
+  } else {
+    const cambio = Math.round((recibido - total) * 100) / 100;
+    cambioEl.textContent = `Cambio: ${cambio} CHF`;
+    cambioEl.className = "cobro-cambio ok";
+    btnConfirmar.disabled = false;
+  }
+}
+
+document.getElementById("input-cash-recibido").addEventListener("input", actualizarCambioCash);
+
+document.querySelectorAll('.importes-rapidos[data-target="cash"] .importe-rapido-btn').forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.getElementById("input-cash-recibido").value = btn.dataset.importe;
+    actualizarCambioCash();
+  });
+});
+
+document.getElementById("btn-cash-confirmar").addEventListener("click", () => {
   registrarVenta([{ metodo: "Cash", importe: totalTicket() }]);
 });
+
 document.getElementById("btn-pago-twint").addEventListener("click", () => {
   registrarVenta([{ metodo: "Twint", importe: totalTicket() }]);
 });
 
 /* ---------------- Pago dividido ---------------- */
 
-function ocultarPanelDividir() {
-  document.getElementById("panel-dividir").classList.add("oculto");
+function ocultarModalDividir() {
+  document.getElementById("modal-dividir").classList.add("oculto");
 }
 
-function mostrarPanelDividir() {
+function mostrarModalDividir() {
   const total = totalTicket();
   document.getElementById("input-dividir-cash").value = total;
   document.getElementById("input-dividir-twint").value = 0;
-  document.getElementById("panel-dividir").classList.remove("oculto");
+  document.getElementById("input-dividir-recibido").value = "";
+  document.getElementById("modal-dividir").classList.remove("oculto");
   validarDividir();
 }
 
-document.getElementById("btn-pago-dividir").addEventListener("click", () => {
-  const panel = document.getElementById("panel-dividir");
-  if (panel.classList.contains("oculto")) {
-    mostrarPanelDividir();
-  } else {
-    ocultarPanelDividir();
-  }
-});
+document.getElementById("btn-pago-dividir").addEventListener("click", mostrarModalDividir);
+document.getElementById("btn-dividir-cancelar").addEventListener("click", ocultarModalDividir);
 
-document.getElementById("btn-dividir-cancelar").addEventListener("click", ocultarPanelDividir);
+function actualizarCambioDividir() {
+  const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
+  const bloque = document.getElementById("bloque-cambio-dividir");
+
+  if (cash <= 0) {
+    bloque.classList.add("oculto");
+    return true;
+  }
+  bloque.classList.remove("oculto");
+
+  const recibidoStr = document.getElementById("input-dividir-recibido").value;
+  const cambioEl = document.getElementById("dividir-cambio");
+
+  if (recibidoStr === "") {
+    cambioEl.textContent = "";
+    cambioEl.className = "cobro-cambio";
+    return true;
+  }
+
+  const recibido = Number(recibidoStr) || 0;
+  if (recibido < cash) {
+    cambioEl.textContent = `Falta efectivo: ${(cash - recibido).toFixed(2)} CHF.`;
+    cambioEl.className = "cobro-cambio error";
+    return false;
+  }
+  const cambio = Math.round((recibido - cash) * 100) / 100;
+  cambioEl.textContent = `Cambio: ${cambio} CHF`;
+  cambioEl.className = "cobro-cambio ok";
+  return true;
+}
 
 function validarDividir() {
   const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
@@ -446,23 +528,34 @@ function validarDividir() {
   const estado = document.getElementById("dividir-estado");
   const btnConfirmar = document.getElementById("btn-dividir-confirmar");
 
-  if (suma === total) {
-    estado.textContent = "Correcto: la suma coincide con el total.";
-    estado.className = "dividir-estado ok";
-    btnConfirmar.disabled = false;
-  } else if (suma < total) {
-    estado.textContent = `Falta importe: ${(total - suma).toFixed(2)} CHF.`;
+  const cambioOk = actualizarCambioDividir();
+
+  if (suma !== total) {
+    if (suma < total) {
+      estado.textContent = `Falta importe: ${(total - suma).toFixed(2)} CHF.`;
+    } else {
+      estado.textContent = `Importe superior al total en ${(suma - total).toFixed(2)} CHF.`;
+    }
     estado.className = "dividir-estado error";
     btnConfirmar.disabled = true;
-  } else {
-    estado.textContent = `Importe superior al total en ${(suma - total).toFixed(2)} CHF.`;
-    estado.className = "dividir-estado error";
-    btnConfirmar.disabled = true;
+    return;
   }
+
+  estado.textContent = "Correcto: la suma coincide con el total.";
+  estado.className = "dividir-estado ok";
+  btnConfirmar.disabled = !cambioOk;
 }
 
 document.getElementById("input-dividir-cash").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-twint").addEventListener("input", validarDividir);
+document.getElementById("input-dividir-recibido").addEventListener("input", validarDividir);
+
+document.querySelectorAll('.importes-rapidos[data-target="dividir"] .importe-rapido-btn').forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.getElementById("input-dividir-recibido").value = btn.dataset.importe;
+    validarDividir();
+  });
+});
 
 document.getElementById("btn-dividir-confirmar").addEventListener("click", () => {
   const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
@@ -485,41 +578,98 @@ function resumenItems(items) {
   return items.map((i) => `${i.cantidad}× ${i.nombre}`).join(", ");
 }
 
+function itemHistorial(v) {
+  const li = document.createElement("li");
+  li.className = "historial-item" + (v.anulada ? " anulada" : "");
+  li.innerHTML = `
+    <div class="historial-item-top">
+      <span>${formatoHora(v.fecha)}</span>
+      <span class="badge">${resumenPago(v)}</span>
+    </div>
+    <div class="historial-item-items">${resumenItems(v.items)}</div>
+    <div class="historial-item-bottom">
+      <span class="historial-item-total">${v.total} CHF</span>
+      ${
+        v.anulada
+          ? `<span class="badge badge-anulada">Anulada</span>`
+          : v.cierre_id
+          ? `<span class="badge badge-cerrada">Cerrada</span>`
+          : `<button class="btn-anular" data-id="${v.id}">Anular</button>`
+      }
+    </div>
+  `;
+  return li;
+}
+
+// Agrupa las ventas por cierre_id para poder marcar en Historial dónde
+// se hizo cada corte de caja, reutilizando los totales ya guardados en
+// data/cierres.json en vez de recalcularlos aquí.
+function agruparPorCierre(ventas, cierres) {
+  const cierrePorId = new Map(cierres.map((c) => [c.id, c]));
+  const pendientes = ventas
+    .filter((v) => !v.cierre_id)
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+  const porCierre = new Map();
+  ventas
+    .filter((v) => v.cierre_id)
+    .forEach((v) => {
+      if (!porCierre.has(v.cierre_id)) porCierre.set(v.cierre_id, []);
+      porCierre.get(v.cierre_id).push(v);
+    });
+
+  const gruposCerrados = [...porCierre.entries()]
+    .map(([id, vs]) => ({
+      cierre: cierrePorId.get(id) || null,
+      id,
+      ventas: vs.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
+    }))
+    .sort((a, b) => {
+      const fa = a.cierre ? new Date(a.cierre.fecha) : 0;
+      const fb = b.cierre ? new Date(b.cierre.fecha) : 0;
+      return fb - fa;
+    });
+
+  return { pendientes, gruposCerrados };
+}
+
 async function refrescarHistorial() {
   if (!configCompleta()) return;
   const lista = document.getElementById("historial-lista");
   setCargando(true);
   try {
     cacheVentas = await githubGetFile(RUTA_VENTAS);
-    const ventas = [...cacheVentas.data].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    cacheCierres = await githubGetFile(RUTA_CIERRES);
 
     lista.innerHTML = "";
-    if (ventas.length === 0) {
+    if (cacheVentas.data.length === 0) {
       lista.innerHTML = `<li class="vacio-nota">Todavía no hay ventas registradas</li>`;
       return;
     }
 
-    ventas.forEach((v) => {
-      const li = document.createElement("li");
-      li.className = "historial-item" + (v.anulada ? " anulada" : "");
-      li.innerHTML = `
-        <div class="historial-item-top">
-          <span>${formatoHora(v.fecha)}</span>
-          <span class="badge">${resumenPago(v)}</span>
-        </div>
-        <div class="historial-item-items">${resumenItems(v.items)}</div>
-        <div class="historial-item-bottom">
-          <span class="historial-item-total">${v.total} CHF</span>
-          ${
-            v.anulada
-              ? `<span class="badge badge-anulada">Anulada</span>`
-              : v.cierre_id
-              ? `<span class="badge badge-cerrada">Cerrada</span>`
-              : `<button class="btn-anular" data-id="${v.id}">Anular</button>`
-          }
-        </div>
-      `;
-      lista.appendChild(li);
+    const { pendientes, gruposCerrados } = agruparPorCierre(cacheVentas.data, cacheCierres.data);
+
+    if (pendientes.length > 0) {
+      const marcador = document.createElement("li");
+      marcador.className = "corte-sesion-actual";
+      marcador.textContent = "Sesión actual (sin cerrar)";
+      lista.appendChild(marcador);
+      pendientes.forEach((v) => lista.appendChild(itemHistorial(v)));
+    }
+
+    gruposCerrados.forEach((grupo) => {
+      const corte = document.createElement("li");
+      corte.className = "corte-cierre";
+      if (grupo.cierre) {
+        corte.innerHTML = `
+          <span class="corte-cierre-titulo">Cierre de caja — ${formatoHora(grupo.cierre.fecha)}</span>
+          <span class="corte-cierre-detalle">Cash ${grupo.cierre.total_cash} CHF · Twint ${grupo.cierre.total_twint} CHF · Total ${grupo.cierre.total} CHF · ${grupo.cierre.num_ventas} ventas</span>
+        `;
+      } else {
+        corte.innerHTML = `<span class="corte-cierre-titulo">Cierre de caja (${grupo.id})</span>`;
+      }
+      lista.appendChild(corte);
+      grupo.ventas.forEach((v) => lista.appendChild(itemHistorial(v)));
     });
   } catch (e) {
     console.error(e);
