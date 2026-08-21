@@ -47,6 +47,15 @@ function b64Decode(str) {
   );
 }
 
+/* ---------------- Identificadores ---------------- */
+
+function generarId(prefijo) {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `${prefijo}_${crypto.randomUUID()}`;
+  }
+  return `${prefijo}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
 /* ---------------- GitHub API ---------------- */
 
 function apiUrl(path) {
@@ -188,17 +197,22 @@ async function githubPutFile(path, data, sha, mensaje) {
   return json.content.sha;
 }
 
-/* Guarda con reintento si el sha ha cambiado entre-tanto (409) */
-async function guardarConReintento(path, mutarFn, mensaje, cache) {
+/* Guarda con reintento si el sha ha cambiado entre-tanto (409).
+   mutarFn puede devolver null para indicar "nada que escribir" (p. ej. un
+   intento anterior ya se aplicó de verdad aunque el cliente no lo supiera),
+   en cuyo caso se trata como éxito sin llamar a la API. */
+async function guardarConReintento(path, mutarFn, mensaje, cache, onReintento) {
   for (let intento = 0; intento < 3; intento++) {
     const actual = cache.get();
     const nuevoData = mutarFn(JSON.parse(JSON.stringify(actual.data)));
+    if (nuevoData === null) return actual.data;
     try {
       const nuevoSha = await githubPutFile(path, nuevoData, actual.sha, mensaje);
       cache.set({ sha: nuevoSha, data: nuevoData });
       return nuevoData;
     } catch (e) {
       if (String(e.message).includes("409") && intento < 2) {
+        if (onReintento) onReintento(intento + 1);
         const fresco = await githubGetFile(path);
         cache.set(fresco);
         continue;
@@ -369,7 +383,7 @@ document.getElementById("btn-vaciar-ticket").addEventListener("click", () => {
   renderTicket();
 });
 
-async function registrarVenta(pagos) {
+async function registrarVenta(pagos, botonOrigen) {
   if (!configCompleta()) {
     mostrarToast("Configura primero la conexión en Ajustes", true);
     mostrarPantalla("ajustes");
@@ -380,7 +394,7 @@ async function registrarVenta(pagos) {
   const total = totalTicket();
   const metodoPago = pagos.length === 1 ? pagos[0].metodo : "Mixto";
   const venta = {
-    id: `v_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    id: generarId("v"),
     fecha: new Date().toISOString(),
     items: ticket.map((i) => ({ ...i })),
     total,
@@ -390,28 +404,45 @@ async function registrarVenta(pagos) {
     cierre_id: null,
   };
 
+  const textoBotonOriginal = botonOrigen ? botonOrigen.textContent : null;
+
   setCargando(true);
+  if (botonOrigen) {
+    botonOrigen.disabled = true;
+    botonOrigen.textContent = "Guardando…";
+  }
   try {
     await asegurarCacheVentas();
     await guardarConReintento(
       RUTA_VENTAS,
       (data) => {
+        // Si un intento anterior sí llegó a guardarse en GitHub (pero el
+        // cliente no recibió la respuesta a tiempo y reintentó), no la
+        // dupliquemos: mismo id de venta ya presente, no hay nada que hacer.
+        if (data.some((v) => v.id === venta.id)) return null;
         data.push(venta);
         return data;
       },
       `Venta ${venta.id} (${metodoPago}, ${total} CHF)`,
-      cacheVentasApi
+      cacheVentasApi,
+      () => {
+        if (botonOrigen) botonOrigen.textContent = "Reintentando…";
+      }
     );
     ticket = [];
     renderTicket();
     ocultarModalCash();
     ocultarModalDividir();
-    mostrarToast(`Venta registrada: ${total} CHF (${metodoPago})`);
+    mostrarToast(`✓ Venta registrada: ${total} CHF (${metodoPago})`);
   } catch (e) {
     console.error(e);
     mostrarToast(`No se pudo guardar la venta: ${e.message}`, true);
   } finally {
     setCargando(false);
+    if (botonOrigen) {
+      botonOrigen.textContent = textoBotonOriginal;
+      botonOrigen.disabled = totalTicket() === 0;
+    }
   }
 }
 
@@ -466,16 +497,16 @@ document.querySelectorAll('.importes-rapidos[data-target="cash"] .importe-rapido
   });
 });
 
-document.getElementById("btn-cash-confirmar").addEventListener("click", () => {
-  registrarVenta([{ metodo: "Cash", importe: totalTicket() }]);
+document.getElementById("btn-cash-confirmar").addEventListener("click", (e) => {
+  registrarVenta([{ metodo: "Cash", importe: totalTicket() }], e.currentTarget);
 });
 
-document.getElementById("btn-pago-twint").addEventListener("click", () => {
-  registrarVenta([{ metodo: "Twint", importe: totalTicket() }]);
+document.getElementById("btn-pago-twint").addEventListener("click", (e) => {
+  registrarVenta([{ metodo: "Twint", importe: totalTicket() }], e.currentTarget);
 });
 
-document.getElementById("btn-pago-tarjeta").addEventListener("click", () => {
-  registrarVenta([{ metodo: "Tarjeta", importe: totalTicket() }]);
+document.getElementById("btn-pago-tarjeta").addEventListener("click", (e) => {
+  registrarVenta([{ metodo: "Tarjeta", importe: totalTicket() }], e.currentTarget);
 });
 
 /* ---------------- Pago dividido ---------------- */
@@ -546,14 +577,14 @@ document.querySelectorAll(".resto-btn").forEach((btn) => {
   });
 });
 
-document.getElementById("btn-dividir-confirmar").addEventListener("click", () => {
+document.getElementById("btn-dividir-confirmar").addEventListener("click", (e) => {
   const { cash, twint, tarjeta } = importesDividir();
   const pagos = [];
   if (cash > 0) pagos.push({ metodo: "Cash", importe: cash });
   if (twint > 0) pagos.push({ metodo: "Twint", importe: twint });
   if (tarjeta > 0) pagos.push({ metodo: "Tarjeta", importe: tarjeta });
   if (pagos.length === 0) return;
-  registrarVenta(pagos);
+  registrarVenta(pagos, e.currentTarget);
 });
 
 /* ---------------- Pantalla: Historial ---------------- */
@@ -772,7 +803,7 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
     // muestren como "sesión actual" para siempre en el Historial.
     const sinCerrar = cacheVentas.data.filter((v) => !v.cierre_id);
     const cierre = {
-      id: `c_${Date.now()}`,
+      id: generarId("c"),
       fecha: new Date().toISOString(),
       total_cash: totalCash,
       total_twint: totalTwint,
@@ -786,6 +817,7 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
     await guardarConReintento(
       RUTA_CIERRES,
       (data) => {
+        if (data.some((c) => c.id === cierre.id)) return null;
         data.push(cierre);
         return data;
       },
