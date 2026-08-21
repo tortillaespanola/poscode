@@ -86,7 +86,7 @@
     ],
     "total": 51,
     "metodo_pago": "Twint",
-    "anulada": false,
+    "anulada": true,
     "cierre_id": null
   }
 ]
