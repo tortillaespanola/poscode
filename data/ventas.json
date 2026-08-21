@@ -338,5 +338,31 @@
     ],
     "anulada": false,
     "cierre_id": "c_1787318396904"
+  },
+  {
+    "id": "v_1787321575128_hr192",
+    "fecha": "2026-08-21T14:12:55.129Z",
+    "items": [
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 1
+      },
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 45,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 45
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
