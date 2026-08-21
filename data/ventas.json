@@ -176,5 +176,31 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_1787312683206_q1ldn",
+    "fecha": "2026-08-21T11:44:43.207Z",
+    "items": [
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 2
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 84,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 84
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
