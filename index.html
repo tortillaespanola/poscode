@@ -79,6 +79,10 @@
         <span>Total Twint</span>
         <span id="cierre-total-twint">0 CHF</span>
       </div>
+      <div class="resumen-fila">
+        <span>Total Tarjeta</span>
+        <span id="cierre-total-tarjeta">0 CHF</span>
+      </div>
       <div class="resumen-fila resumen-fila--total">
         <span>Total caja</span>
         <span id="cierre-total">0 CHF</span>
@@ -130,8 +134,9 @@
   <div class="pago-botones">
     <button id="btn-pago-cash" class="pago-btn" disabled>Cash</button>
     <button id="btn-pago-twint" class="pago-btn" disabled>Twint</button>
+    <button id="btn-pago-tarjeta" class="pago-btn" disabled>Tarjeta</button>
   </div>
-  <button id="btn-pago-dividir" class="link-btn link-btn--centrado" disabled>Dividir pago (Cash + Twint)</button>
+  <button id="btn-pago-dividir" class="link-btn link-btn--centrado" disabled>Dividir pago</button>
 </div>
 
 <nav class="tabbar">
@@ -170,15 +175,21 @@
 <div id="modal-dividir" class="modal-backdrop oculto">
   <div class="modal-cobro">
     <p class="eyebrow">Pago dividido</p>
+    <div class="cobro-total-row">
+      <span>Total a repartir</span>
+      <span id="dividir-total-valor">0 CHF</span>
+    </div>
+
     <div class="dividir-fila">
       <label for="input-dividir-cash">Cash</label>
-      <input id="input-dividir-cash" type="number" min="0" step="0.01" inputmode="decimal">
+      <input id="input-dividir-cash" type="number" min="0" step="0.01" inputmode="decimal" data-metodo="cash">
       <span class="dividir-unidad">CHF</span>
+      <button type="button" class="resto-btn" data-target="cash">Resto</button>
     </div>
 
     <div id="bloque-cambio-dividir" class="bloque-cambio-dividir oculto">
       <label class="campo-cobro-mini">
-        <span>Recibido en efectivo (opcional)</span>
+        <span>Recibido en efectivo (opcional, solo para calcular el cambio)</span>
         <input id="input-dividir-recibido" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Importe entregado">
       </label>
       <div class="importes-rapidos" data-target="dividir">
@@ -192,9 +203,18 @@
 
     <div class="dividir-fila">
       <label for="input-dividir-twint">Twint</label>
-      <input id="input-dividir-twint" type="number" min="0" step="0.01" inputmode="decimal">
+      <input id="input-dividir-twint" type="number" min="0" step="0.01" inputmode="decimal" data-metodo="twint">
       <span class="dividir-unidad">CHF</span>
+      <button type="button" class="resto-btn" data-target="twint">Resto</button>
     </div>
+
+    <div class="dividir-fila">
+      <label for="input-dividir-tarjeta">Tarjeta</label>
+      <input id="input-dividir-tarjeta" type="number" min="0" step="0.01" inputmode="decimal" data-metodo="tarjeta">
+      <span class="dividir-unidad">CHF</span>
+      <button type="button" class="resto-btn" data-target="tarjeta">Resto</button>
+    </div>
+
     <p id="dividir-estado" class="dividir-estado"></p>
     <div class="dividir-acciones">
       <button id="btn-dividir-cancelar" class="btn-secundario">Cancelar</button>

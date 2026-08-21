@@ -280,15 +280,15 @@ input{
 
 .pago-botones{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr;
   gap:10px;
 }
 .pago-btn{
-  padding:14px 10px;
+  padding:14px 6px;
   font-family:'Montserrat',sans-serif;
-  font-size:14px;
+  font-size:13px;
   font-weight:800;
-  letter-spacing:1px;
+  letter-spacing:0.5px;
   text-transform:uppercase;
   color:var(--ink);
   background:var(--gold);
@@ -426,6 +426,19 @@ input{
   opacity:0.5;
   width:28px;
 }
+.resto-btn{
+  border:1px solid var(--ink);
+  padding:0 10px;
+  min-height:44px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  white-space:nowrap;
+  background:var(--bg);
+}
+.resto-btn:active{background:var(--muted);}
 .bloque-cambio-dividir{
   border:1px dashed var(--line);
   padding:12px;

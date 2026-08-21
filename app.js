@@ -239,13 +239,15 @@ function pagosDeVenta(v) {
 function totalesPorMetodo(ventas) {
   let cash = 0;
   let twint = 0;
+  let tarjeta = 0;
   ventas.forEach((v) => {
     pagosDeVenta(v).forEach((p) => {
       if (p.metodo === "Cash") cash += p.importe;
       else if (p.metodo === "Twint") twint += p.importe;
+      else if (p.metodo === "Tarjeta") tarjeta += p.importe;
     });
   });
-  return { cash, twint };
+  return { cash, twint, tarjeta };
 }
 
 function resumenPago(v) {
@@ -329,6 +331,7 @@ function renderTicket() {
   document.getElementById("ticket-total-valor").textContent = `${total} CHF`;
   document.getElementById("btn-pago-cash").disabled = total === 0;
   document.getElementById("btn-pago-twint").disabled = total === 0;
+  document.getElementById("btn-pago-tarjeta").disabled = total === 0;
   document.getElementById("btn-pago-dividir").disabled = total === 0;
   if (total === 0) {
     ocultarModalCash();
@@ -471,6 +474,10 @@ document.getElementById("btn-pago-twint").addEventListener("click", () => {
   registrarVenta([{ metodo: "Twint", importe: totalTicket() }]);
 });
 
+document.getElementById("btn-pago-tarjeta").addEventListener("click", () => {
+  registrarVenta([{ metodo: "Tarjeta", importe: totalTicket() }]);
+});
+
 /* ---------------- Pago dividido ---------------- */
 
 function ocultarModalDividir() {
@@ -479,8 +486,10 @@ function ocultarModalDividir() {
 
 function mostrarModalDividir() {
   const total = totalTicket();
+  document.getElementById("dividir-total-valor").textContent = `${total} CHF`;
   document.getElementById("input-dividir-cash").value = total;
   document.getElementById("input-dividir-twint").value = 0;
+  document.getElementById("input-dividir-tarjeta").value = 0;
   document.getElementById("input-dividir-recibido").value = "";
   document.getElementById("modal-dividir").classList.remove("oculto");
   validarDividir();
@@ -520,10 +529,17 @@ function actualizarCambioDividir() {
   return true;
 }
 
+function importesDividir() {
+  return {
+    cash: Number(document.getElementById("input-dividir-cash").value) || 0,
+    twint: Number(document.getElementById("input-dividir-twint").value) || 0,
+    tarjeta: Number(document.getElementById("input-dividir-tarjeta").value) || 0,
+  };
+}
+
 function validarDividir() {
-  const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
-  const twint = Number(document.getElementById("input-dividir-twint").value) || 0;
-  const suma = Math.round((cash + twint) * 100) / 100;
+  const { cash, twint, tarjeta } = importesDividir();
+  const suma = Math.round((cash + twint + tarjeta) * 100) / 100;
   const total = totalTicket();
   const estado = document.getElementById("dividir-estado");
   const btnConfirmar = document.getElementById("btn-dividir-confirmar");
@@ -532,7 +548,7 @@ function validarDividir() {
 
   if (suma !== total) {
     if (suma < total) {
-      estado.textContent = `Falta importe: ${(total - suma).toFixed(2)} CHF.`;
+      estado.textContent = `Falta por repartir: ${(total - suma).toFixed(2)} CHF.`;
     } else {
       estado.textContent = `Importe superior al total en ${(suma - total).toFixed(2)} CHF.`;
     }
@@ -548,7 +564,22 @@ function validarDividir() {
 
 document.getElementById("input-dividir-cash").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-twint").addEventListener("input", validarDividir);
+document.getElementById("input-dividir-tarjeta").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-recibido").addEventListener("input", validarDividir);
+
+// Botón "Resto": rellena ese campo con lo que falta para llegar al total,
+// para no tener que calcular a mano ni dejar el reparto desincronizado
+// (p. ej. al anotar el efectivo recibido sin actualizar el campo Cash de arriba).
+document.querySelectorAll(".resto-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const objetivo = btn.dataset.target;
+    const { cash, twint, tarjeta } = importesDividir();
+    const otros = { cash: twint + tarjeta, twint: cash + tarjeta, tarjeta: cash + twint }[objetivo];
+    const resto = Math.max(0, Math.round((totalTicket() - otros) * 100) / 100);
+    document.getElementById(`input-dividir-${objetivo}`).value = resto;
+    validarDividir();
+  });
+});
 
 document.querySelectorAll('.importes-rapidos[data-target="dividir"] .importe-rapido-btn').forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -558,11 +589,11 @@ document.querySelectorAll('.importes-rapidos[data-target="dividir"] .importe-rap
 });
 
 document.getElementById("btn-dividir-confirmar").addEventListener("click", () => {
-  const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
-  const twint = Number(document.getElementById("input-dividir-twint").value) || 0;
+  const { cash, twint, tarjeta } = importesDividir();
   const pagos = [];
   if (cash > 0) pagos.push({ metodo: "Cash", importe: cash });
   if (twint > 0) pagos.push({ metodo: "Twint", importe: twint });
+  if (tarjeta > 0) pagos.push({ metodo: "Tarjeta", importe: tarjeta });
   if (pagos.length === 0) return;
   registrarVenta(pagos);
 });
@@ -724,12 +755,13 @@ async function refrescarCierre() {
     cacheCierres = await githubGetFile(RUTA_CIERRES);
 
     const pendientes = ventasPendientes(cacheVentas.data);
-    const { cash: totalCash, twint: totalTwint } = totalesPorMetodo(pendientes);
+    const { cash: totalCash, twint: totalTwint, tarjeta: totalTarjeta } = totalesPorMetodo(pendientes);
 
     document.getElementById("cierre-num-ventas").textContent = pendientes.length;
     document.getElementById("cierre-total-cash").textContent = `${totalCash} CHF`;
     document.getElementById("cierre-total-twint").textContent = `${totalTwint} CHF`;
-    document.getElementById("cierre-total").textContent = `${totalCash + totalTwint} CHF`;
+    document.getElementById("cierre-total-tarjeta").textContent = `${totalTarjeta} CHF`;
+    document.getElementById("cierre-total").textContent = `${totalCash + totalTwint + totalTarjeta} CHF`;
     document.getElementById("btn-cerrar-caja").disabled = pendientes.length === 0;
 
     const lista = document.getElementById("cierres-lista");
@@ -746,7 +778,7 @@ async function refrescarCierre() {
             <span>${formatoHora(c.fecha)}</span>
             <span>${c.num_ventas} ventas</span>
           </div>
-          <div class="historial-item-items">Cash ${c.total_cash} CHF · Twint ${c.total_twint} CHF</div>
+          <div class="historial-item-items">Cash ${c.total_cash} CHF · Twint ${c.total_twint} CHF · Tarjeta ${c.total_tarjeta || 0} CHF</div>
           <div class="historial-item-bottom">
             <span class="historial-item-total">${c.total} CHF</span>
             <button class="btn-exportar-csv" data-id="${c.id}">Exportar CSV</button>
@@ -770,8 +802,8 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
   const pendientes = ventasPendientes(cacheVentas.data);
   if (pendientes.length === 0) return;
 
-  const { cash: totalCash, twint: totalTwint } = totalesPorMetodo(pendientes);
-  const total = totalCash + totalTwint;
+  const { cash: totalCash, twint: totalTwint, tarjeta: totalTarjeta } = totalesPorMetodo(pendientes);
+  const total = totalCash + totalTwint + totalTarjeta;
 
   if (!confirm(`¿Cerrar caja con ${pendientes.length} ventas (${total} CHF)? Esto pondrá el contador a cero.`)) return;
 
@@ -786,6 +818,7 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
       fecha: new Date().toISOString(),
       total_cash: totalCash,
       total_twint: totalTwint,
+      total_tarjeta: totalTarjeta,
       total,
       num_ventas: pendientes.length,
       venta_ids: sinCerrar.map((v) => v.id),
@@ -852,7 +885,7 @@ async function exportarCierreCSV(cierreId) {
       .map((id) => cacheVentas.data.find((v) => v.id === id))
       .filter(Boolean);
 
-    const filas = [["Fecha", "Hora", "Artículos", "Total", "Cash", "Twint", "Anulada"]];
+    const filas = [["Fecha", "Hora", "Artículos", "Total", "Cash", "Twint", "Tarjeta", "Anulada"]];
     ventasDelCierre.forEach((v) => {
       const d = new Date(v.fecha);
       const fecha = d.toLocaleDateString("es-ES");
@@ -860,7 +893,8 @@ async function exportarCierreCSV(cierreId) {
       const pagos = pagosDeVenta(v);
       const cash = pagos.filter((p) => p.metodo === "Cash").reduce((s, p) => s + p.importe, 0);
       const twint = pagos.filter((p) => p.metodo === "Twint").reduce((s, p) => s + p.importe, 0);
-      filas.push([fecha, hora, resumenItems(v.items), v.total, cash, twint, v.anulada ? "Sí" : "No"]);
+      const tarjeta = pagos.filter((p) => p.metodo === "Tarjeta").reduce((s, p) => s + p.importe, 0);
+      filas.push([fecha, hora, resumenItems(v.items), v.total, cash, twint, tarjeta, v.anulada ? "Sí" : "No"]);
     });
 
     filas.push([]);
@@ -871,6 +905,7 @@ async function exportarCierreCSV(cierreId) {
       cierre.total,
       cierre.total_cash,
       cierre.total_twint,
+      cierre.total_tarjeta || 0,
       "",
     ]);
 
