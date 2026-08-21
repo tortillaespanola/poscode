@@ -421,5 +421,108 @@
     ],
     "anulada": false,
     "cierre_id": "c_1787322826796"
+  },
+  {
+    "id": "v_1787324366103_8v4lf",
+    "fecha": "2026-08-21T14:59:26.103Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 1
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 2
+      }
+    ],
+    "total": 18,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 18
+      }
+    ],
+    "anulada": false,
+    "cierre_id": "c_1787324435714"
+  },
+  {
+    "id": "v_1787324389591_68rzn",
+    "fecha": "2026-08-21T14:59:49.591Z",
+    "items": [
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 4
+      },
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 1
+      }
+    ],
+    "total": 63,
+    "metodo_pago": "Mixto",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 50
+      },
+      {
+        "metodo": "Tarjeta",
+        "importe": 13
+      }
+    ],
+    "anulada": false,
+    "cierre_id": "c_1787324435714"
+  },
+  {
+    "id": "v_1787324398111_v5foz",
+    "fecha": "2026-08-21T14:59:58.111Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 3
+      }
+    ],
+    "total": 18,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 18
+      }
+    ],
+    "anulada": true,
+    "cierre_id": "c_1787324435714"
+  },
+  {
+    "id": "v_1787333008916_ln63y",
+    "fecha": "2026-08-21T17:23:28.917Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 3
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 2
+      }
+    ],
+    "total": 30,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 30
+      }
+    ],
+    "anulada": true,
+    "cierre_id": null
   }
 ]
