@@ -53,6 +53,87 @@ function apiUrl(path) {
   return `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`;
 }
 
+async function validarConexion() {
+  const resRepo = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}`, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+    },
+  });
+  if (resRepo.status === 401) {
+    throw new Error("Token inválido o caducado (401).");
+  }
+  if (resRepo.status === 404) {
+    throw new Error("Repositorio no encontrado, o el token no tiene acceso a él (404). Revisa usuario y repositorio.");
+  }
+  if (!resRepo.ok) {
+    throw new Error(`Error comprobando el repositorio (${resRepo.status}).`);
+  }
+  const repoJson = await resRepo.json();
+  if (repoJson.permissions && repoJson.permissions.push === false) {
+    throw new Error("El token no tiene permiso de escritura (push) en este repositorio.");
+  }
+
+  const resBranch = await fetch(
+    `https://api.github.com/repos/${config.owner}/${config.repo}/branches/${encodeURIComponent(config.branch)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${config.token}`,
+        Accept: "application/vnd.github+json",
+      },
+    }
+  );
+  if (resBranch.status === 404) {
+    throw new Error(`La rama "${config.branch}" no existe en este repositorio.`);
+  }
+  if (!resBranch.ok) {
+    throw new Error(`Error comprobando la rama (${resBranch.status}).`);
+  }
+
+  // Comprobación real de escritura: el permiso "push" del repo (arriba) refleja el
+  // rol de la cuenta, no lo que el token en sí tiene concedido. Un fine-grained PAT
+  // puede leer perfectamente y aun así no tener permiso de Contents: Read and write,
+  // lo cual solo se detecta intentando escribir de verdad.
+  const RUTA_TEST = "data/.conexion_test.json";
+  let shaTest = null;
+  const resGetTest = await fetch(`${apiUrl(RUTA_TEST)}?ref=${encodeURIComponent(config.branch)}`, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+    },
+  });
+  if (resGetTest.ok) {
+    shaTest = (await resGetTest.json()).sha;
+  }
+
+  const bodyTest = {
+    message: "Test de conexión (Probar conexión en Ajustes)",
+    content: b64Encode(JSON.stringify({ ok: true, ts: new Date().toISOString() })),
+    branch: config.branch,
+  };
+  if (shaTest) bodyTest.sha = shaTest;
+
+  const resPutTest = await fetch(apiUrl(RUTA_TEST), {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodyTest),
+  });
+  if (resPutTest.status === 403) {
+    throw new Error(
+      'El token no tiene permiso de escritura en Contents (403 "Resource not accessible by personal access token"). ' +
+        "Revisa en GitHub el token: Repository permissions → Contents debe estar en \"Read and write\"."
+    );
+  }
+  if (!resPutTest.ok) {
+    const texto = await resPutTest.text().catch(() => "");
+    throw new Error(`Error probando escritura (${resPutTest.status}): ${texto}`);
+  }
+}
+
 async function githubGetFile(path) {
   const res = await fetch(`${apiUrl(path)}?ref=${encodeURIComponent(config.branch)}`, {
     headers: {
@@ -107,7 +188,7 @@ async function githubPutFile(path, data, sha, mensaje) {
 async function guardarConReintento(path, mutarFn, mensaje, cache) {
   for (let intento = 0; intento < 3; intento++) {
     const actual = cache.get();
-    const nuevoData = mutarFn(structuredClone(actual.data));
+    const nuevoData = mutarFn(JSON.parse(JSON.stringify(actual.data)));
     try {
       const nuevoSha = await githubPutFile(path, nuevoData, actual.sha, mensaje);
       cache.set({ sha: nuevoSha, data: nuevoData });
@@ -278,7 +359,7 @@ async function registrarVenta(metodoPago) {
     mostrarToast(`Venta registrada: ${total} CHF (${metodoPago})`);
   } catch (e) {
     console.error(e);
-    mostrarToast("No se pudo guardar la venta. Revisa conexión/ajustes.", true);
+    mostrarToast(`No se pudo guardar la venta: ${e.message}`, true);
   } finally {
     setCargando(false);
   }
@@ -479,7 +560,7 @@ document.getElementById("btn-cerrar-caja").addEventListener("click", async () =>
     refrescarCierre();
   } catch (e) {
     console.error(e);
-    mostrarToast("No se pudo cerrar la caja. Vuelve a intentarlo.", true);
+    mostrarToast(`No se pudo cerrar la caja: ${e.message}`, true);
   } finally {
     setCargando(false);
   }
@@ -494,10 +575,27 @@ function rellenarFormularioAjustes() {
   document.getElementById("input-token").value = config.token || "";
 }
 
+function limpiarOwnerRepo(ownerRaw, repoRaw) {
+  let owner = ownerRaw.trim();
+  let repo = repoRaw.trim();
+  const match = owner.match(/github\.com\/([^\/\s]+)\/([^\/\s]+)/i) || repo.match(/github\.com\/([^\/\s]+)\/([^\/\s]+)/i);
+  if (match) {
+    owner = match[1];
+    repo = match[2];
+  }
+  owner = owner.replace(/^@/, "");
+  repo = repo.replace(/\.git$/i, "").replace(/^\//, "");
+  return { owner, repo };
+}
+
 document.getElementById("btn-guardar-ajustes").addEventListener("click", () => {
+  const { owner, repo } = limpiarOwnerRepo(
+    document.getElementById("input-owner").value,
+    document.getElementById("input-repo").value
+  );
   const nuevo = {
-    owner: document.getElementById("input-owner").value.trim(),
-    repo: document.getElementById("input-repo").value.trim(),
+    owner,
+    repo,
     branch: document.getElementById("input-branch").value.trim() || "main",
     token: document.getElementById("input-token").value.trim(),
   };
@@ -515,12 +613,12 @@ document.getElementById("btn-probar-conexion").addEventListener("click", async (
   estado.className = "ajustes-estado";
   setCargando(true);
   try {
-    await githubGetFile(RUTA_VENTAS);
+    await validarConexion();
     estado.textContent = "Conexión correcta ✔";
     estado.className = "ajustes-estado ok";
   } catch (e) {
     console.error(e);
-    estado.textContent = "No se pudo conectar. Revisa usuario, repo, rama y token.";
+    estado.textContent = e.message || "No se pudo conectar. Revisa usuario, repo, rama y token.";
     estado.className = "ajustes-estado error";
   } finally {
     setCargando(false);
