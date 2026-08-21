@@ -363,7 +363,7 @@
       }
     ],
     "anulada": false,
-    "cierre_id": null
+    "cierre_id": "c_1787322826796"
   },
   {
     "id": "v_1787321621737_jpf0t",
@@ -389,7 +389,7 @@
       }
     ],
     "anulada": true,
-    "cierre_id": null
+    "cierre_id": "c_1787322826796"
   },
   {
     "id": "v_1787322781833_ml3or",
@@ -420,6 +420,6 @@
       }
     ],
     "anulada": false,
-    "cierre_id": null
+    "cierre_id": "c_1787322826796"
   }
 ]
