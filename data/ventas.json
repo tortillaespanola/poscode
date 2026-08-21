@@ -47,7 +47,7 @@
     "total": 51,
     "metodo_pago": "Cash",
     "anulada": true,
-    "cierre_id": null
+    "cierre_id": "c_1787310196852"
   },
   {
     "id": "v_1787310152776_cdkme",
@@ -87,7 +87,7 @@
     "total": 51,
     "metodo_pago": "Twint",
     "anulada": true,
-    "cierre_id": null
+    "cierre_id": "c_1787310196852"
   },
   {
     "id": "v_1787310187833_opp50",
@@ -248,7 +248,7 @@
       }
     ],
     "anulada": true,
-    "cierre_id": null
+    "cierre_id": "c_1787317970922"
   },
   {
     "id": "v_1787317890102_s00qp",
