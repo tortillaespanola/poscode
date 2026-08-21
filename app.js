@@ -55,6 +55,7 @@ function apiUrl(path) {
 
 async function validarConexion() {
   const resRepo = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}`, {
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${config.token}`,
       Accept: "application/vnd.github+json",
@@ -77,6 +78,7 @@ async function validarConexion() {
   const resBranch = await fetch(
     `https://api.github.com/repos/${config.owner}/${config.repo}/branches/${encodeURIComponent(config.branch)}`,
     {
+      cache: "no-store",
       headers: {
         Authorization: `Bearer ${config.token}`,
         Accept: "application/vnd.github+json",
@@ -97,6 +99,7 @@ async function validarConexion() {
   const RUTA_TEST = "data/.conexion_test.json";
   let shaTest = null;
   const resGetTest = await fetch(`${apiUrl(RUTA_TEST)}?ref=${encodeURIComponent(config.branch)}`, {
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${config.token}`,
       Accept: "application/vnd.github+json",
@@ -136,6 +139,7 @@ async function validarConexion() {
 
 async function githubGetFile(path) {
   const res = await fetch(`${apiUrl(path)}?ref=${encodeURIComponent(config.branch)}`, {
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${config.token}`,
       Accept: "application/vnd.github+json",
