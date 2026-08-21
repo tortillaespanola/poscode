@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "v_1787309438807_ht93v",
+    "fecha": "2026-08-21T10:50:38.818Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 2
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      },
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 1
+      }
+    ],
+    "total": 57,
+    "metodo_pago": "Cash",
+    "anulada": false,
+    "cierre_id": null
+  }
+]
