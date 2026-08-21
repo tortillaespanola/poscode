@@ -490,44 +490,12 @@ function mostrarModalDividir() {
   document.getElementById("input-dividir-cash").value = total;
   document.getElementById("input-dividir-twint").value = 0;
   document.getElementById("input-dividir-tarjeta").value = 0;
-  document.getElementById("input-dividir-recibido").value = "";
   document.getElementById("modal-dividir").classList.remove("oculto");
   validarDividir();
 }
 
 document.getElementById("btn-pago-dividir").addEventListener("click", mostrarModalDividir);
 document.getElementById("btn-dividir-cancelar").addEventListener("click", ocultarModalDividir);
-
-function actualizarCambioDividir() {
-  const cash = Number(document.getElementById("input-dividir-cash").value) || 0;
-  const bloque = document.getElementById("bloque-cambio-dividir");
-
-  if (cash <= 0) {
-    bloque.classList.add("oculto");
-    return true;
-  }
-  bloque.classList.remove("oculto");
-
-  const recibidoStr = document.getElementById("input-dividir-recibido").value;
-  const cambioEl = document.getElementById("dividir-cambio");
-
-  if (recibidoStr === "") {
-    cambioEl.textContent = "";
-    cambioEl.className = "cobro-cambio";
-    return true;
-  }
-
-  const recibido = Number(recibidoStr) || 0;
-  if (recibido < cash) {
-    cambioEl.textContent = `Falta efectivo: ${(cash - recibido).toFixed(2)} CHF.`;
-    cambioEl.className = "cobro-cambio error";
-    return false;
-  }
-  const cambio = Math.round((recibido - cash) * 100) / 100;
-  cambioEl.textContent = `Cambio: ${cambio} CHF`;
-  cambioEl.className = "cobro-cambio ok";
-  return true;
-}
 
 function importesDividir() {
   return {
@@ -544,8 +512,6 @@ function validarDividir() {
   const estado = document.getElementById("dividir-estado");
   const btnConfirmar = document.getElementById("btn-dividir-confirmar");
 
-  const cambioOk = actualizarCambioDividir();
-
   if (suma !== total) {
     if (suma < total) {
       estado.textContent = `Falta por repartir: ${(total - suma).toFixed(2)} CHF.`;
@@ -559,13 +525,12 @@ function validarDividir() {
 
   estado.textContent = "Correcto: la suma coincide con el total.";
   estado.className = "dividir-estado ok";
-  btnConfirmar.disabled = !cambioOk;
+  btnConfirmar.disabled = false;
 }
 
 document.getElementById("input-dividir-cash").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-twint").addEventListener("input", validarDividir);
 document.getElementById("input-dividir-tarjeta").addEventListener("input", validarDividir);
-document.getElementById("input-dividir-recibido").addEventListener("input", validarDividir);
 
 // Botón "Resto": rellena ese campo con lo que falta para llegar al total,
 // para no tener que calcular a mano ni dejar el reparto desincronizado
@@ -577,13 +542,6 @@ document.querySelectorAll(".resto-btn").forEach((btn) => {
     const otros = { cash: twint + tarjeta, twint: cash + tarjeta, tarjeta: cash + twint }[objetivo];
     const resto = Math.max(0, Math.round((totalTicket() - otros) * 100) / 100);
     document.getElementById(`input-dividir-${objetivo}`).value = resto;
-    validarDividir();
-  });
-});
-
-document.querySelectorAll('.importes-rapidos[data-target="dividir"] .importe-rapido-btn').forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.getElementById("input-dividir-recibido").value = btn.dataset.importe;
     validarDividir();
   });
 });
