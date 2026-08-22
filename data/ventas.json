@@ -800,5 +800,39 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_b1e5683a-6d7a-4d1c-bc73-9f68a963da3c",
+    "fecha": "2026-08-22T04:46:39.954Z",
+    "items": [
+      {
+        "nombre": "Tortilla Entera",
+        "precio": 39,
+        "cantidad": 2
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 84,
+    "metodo_pago": "Mixto",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 45
+      },
+      {
+        "metodo": "Twint",
+        "importe": 5
+      },
+      {
+        "metodo": "Tarjeta",
+        "importe": 34
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
