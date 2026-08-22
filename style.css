@@ -46,14 +46,19 @@ input{
   top:0;
   z-index:10;
 }
-.brand{
-  font-family:'Montserrat',sans-serif;
-  font-weight:800;
-  font-size:16px;
-  letter-spacing:2px;
-  text-transform:uppercase;
+.brand-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  color:var(--ink);
+  background:var(--gold);
+  border:2px solid var(--ink);
+  border-radius:8px;
 }
-.brand-accent{color:var(--gold);-webkit-text-stroke:0.4px var(--ink);}
+.brand-logo svg{width:20px;height:20px;display:block;}
+.brand-logo:active{background:var(--gold-light);}
 .icon-btn{
   font-family:'Space Mono',monospace;
   font-size:12px;

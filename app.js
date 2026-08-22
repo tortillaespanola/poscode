@@ -289,6 +289,7 @@ function mostrarPantalla(nombre) {
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => mostrarPantalla(btn.dataset.pantalla));
 });
+document.getElementById("btn-logo").addEventListener("click", () => mostrarPantalla("venta"));
 document.getElementById("btn-ajustes").addEventListener("click", () => {
   document.querySelectorAll(".pantalla").forEach((p) => p.classList.remove("activa"));
   document.getElementById("pantalla-ajustes").classList.add("activa");
