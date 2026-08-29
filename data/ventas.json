@@ -1599,5 +1599,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_b8015445-5922-4dc3-9a75-94785f219c61",
+    "fecha": "2026-08-29T18:32:52.057Z",
+    "items": [
+      {
+        "nombre": "Paella visa 36",
+        "precio": 37,
+        "cantidad": 1
+      }
+    ],
+    "total": 37,
+    "metodo_pago": "Tarjeta",
+    "pagos": [
+      {
+        "metodo": "Tarjeta",
+        "importe": 37
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
