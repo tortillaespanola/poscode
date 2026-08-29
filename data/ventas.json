@@ -19,5 +19,26 @@
     ],
     "anulada": true,
     "cierre_id": null
+  },
+  {
+    "id": "v_c3f42958-618d-4714-8eca-fb0bf911d781",
+    "fecha": "2026-08-29T10:10:16.684Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 6,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 6
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
