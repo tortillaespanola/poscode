@@ -607,5 +607,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_ab9269a8-9f78-48bb-87d3-cb76490db346",
+    "fecha": "2026-08-29T14:26:23.124Z",
+    "items": [
+      {
+        "nombre": "Pincho Asociación",
+        "precio": 6,
+        "cantidad": 3
+      }
+    ],
+    "total": 18,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 18
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
