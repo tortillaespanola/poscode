@@ -733,5 +733,31 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_b4fa3e8b-7155-4069-822d-5fcaa9bd179c",
+    "fecha": "2026-08-29T15:14:14.005Z",
+    "items": [
+      {
+        "nombre": "Combo",
+        "precio": 10,
+        "cantidad": 2
+      },
+      {
+        "nombre": "Rebujito",
+        "precio": 6,
+        "cantidad": 1
+      }
+    ],
+    "total": 26,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 26
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
