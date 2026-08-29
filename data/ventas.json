@@ -759,5 +759,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_856e7641-3fc8-40b7-80a8-2278f402ecd5",
+    "fecha": "2026-08-29T15:47:08.613Z",
+    "items": [
+      {
+        "nombre": "Rebu",
+        "precio": 5,
+        "cantidad": 2
+      }
+    ],
+    "total": 10,
+    "metodo_pago": "Tarjeta",
+    "pagos": [
+      {
+        "metodo": "Tarjeta",
+        "importe": 10
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
