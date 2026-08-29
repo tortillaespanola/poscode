@@ -1095,5 +1095,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_3622e97e-f2b2-41f8-8389-68ac61c33127",
+    "fecha": "2026-08-29T16:55:46.645Z",
+    "items": [
+      {
+        "nombre": "Torti",
+        "precio": 5,
+        "cantidad": 2
+      }
+    ],
+    "total": 10,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 10
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
