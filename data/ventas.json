@@ -649,5 +649,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_4687a581-6d94-4510-a2a8-7fa33184d7b4",
+    "fecha": "2026-08-29T14:46:27.678Z",
+    "items": [
+      {
+        "nombre": "Torti",
+        "precio": 25,
+        "cantidad": 2
+      }
+    ],
+    "total": 50,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 50
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
