@@ -1200,5 +1200,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_f281e6f3-4f80-4858-b78e-d2a2abfa839a",
+    "fecha": "2026-08-29T17:03:55.514Z",
+    "items": [
+      {
+        "nombre": "Pincho",
+        "precio": 6,
+        "cantidad": 2
+      }
+    ],
+    "total": 12,
+    "metodo_pago": "Tarjeta",
+    "pagos": [
+      {
+        "metodo": "Tarjeta",
+        "importe": 12
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
