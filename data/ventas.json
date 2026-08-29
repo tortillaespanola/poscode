@@ -460,5 +460,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_b68de7e6-f030-4174-a3dc-b7ae85c0797f",
+    "fecha": "2026-08-29T13:03:22.060Z",
+    "items": [
+      {
+        "nombre": "Rrbu",
+        "precio": 5,
+        "cantidad": 2
+      }
+    ],
+    "total": 10,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 10
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
