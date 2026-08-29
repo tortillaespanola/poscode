@@ -927,5 +927,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_6148336c-eb0c-4e8c-9e80-e0834ab6141b",
+    "fecha": "2026-08-29T16:34:52.997Z",
+    "items": [
+      {
+        "nombre": "Tortilla",
+        "precio": 5,
+        "cantidad": 1
+      }
+    ],
+    "total": 5,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 5
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
