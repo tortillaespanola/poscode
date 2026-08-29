@@ -292,5 +292,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_e07ecf54-1585-480e-8df7-c254b8a0f54d",
+    "fecha": "2026-08-29T12:24:01.592Z",
+    "items": [
+      {
+        "nombre": "Combo",
+        "precio": 10,
+        "cantidad": 1
+      }
+    ],
+    "total": 10,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": 10
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
