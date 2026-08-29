@@ -1347,5 +1347,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_601be9ae-a677-44c4-b86f-7f8a4ee08bb8",
+    "fecha": "2026-08-29T17:38:38.540Z",
+    "items": [
+      {
+        "nombre": "Vino juan",
+        "precio": -26,
+        "cantidad": 1
+      }
+    ],
+    "total": -26,
+    "metodo_pago": "Cash",
+    "pagos": [
+      {
+        "metodo": "Cash",
+        "importe": -26
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
