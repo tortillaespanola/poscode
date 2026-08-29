@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": "v_f92b4f68-0561-4d41-b5b0-3a66896c93d1",
+    "fecha": "2026-08-29T10:05:58.672Z",
+    "items": [
+      {
+        "nombre": "Combo",
+        "precio": 10,
+        "cantidad": 3
+      }
+    ],
+    "total": 30,
+    "metodo_pago": "Tarjeta",
+    "pagos": [
+      {
+        "metodo": "Tarjeta",
+        "importe": 30
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
+  }
+]
