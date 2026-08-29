@@ -9,6 +9,7 @@ const CONFIG_KEY = "caja_evento_config";
 // Catálogo de artículos del punto de venta.
 const CATALOGO = [
   { nombre: "Pincho", precio: 6 },
+  { nombre: "Pincho Asociación", precio: 6 },
   { nombre: "Rebujito", precio: 6 },
   { nombre: "Tortilla Entera", precio: 39 },
   { nombre: "Combo", precio: 10 },
