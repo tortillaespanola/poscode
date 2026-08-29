@@ -1053,5 +1053,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_4d2b13b7-afca-4ee4-946b-9f938498a096",
+    "fecha": "2026-08-29T16:51:54.872Z",
+    "items": [
+      {
+        "nombre": "Combo",
+        "precio": 10,
+        "cantidad": 1
+      }
+    ],
+    "total": 10,
+    "metodo_pago": "Tarjeta",
+    "pagos": [
+      {
+        "metodo": "Tarjeta",
+        "importe": 10
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
