@@ -1494,5 +1494,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_fe21c9c3-f1cb-4bc4-8405-a1fd2019ad3f",
+    "fecha": "2026-08-29T18:14:33.553Z",
+    "items": [
+      {
+        "nombre": "Tortilla dragons",
+        "precio": 25,
+        "cantidad": 1
+      }
+    ],
+    "total": 25,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 25
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
