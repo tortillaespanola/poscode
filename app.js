@@ -6,6 +6,14 @@ const RUTA_VENTAS = "data/ventas.json";
 const RUTA_CIERRES = "data/cierres.json";
 const CONFIG_KEY = "caja_evento_config";
 
+// Catálogo de artículos del punto de venta.
+const CATALOGO = [
+  { nombre: "Pincho", precio: 6 },
+  { nombre: "Rebujito", precio: 6 },
+  { nombre: "Tortilla Entera", precio: 39 },
+  { nombre: "Combo", precio: 10 },
+];
+
 let config = cargarConfig();
 let ticket = [];          // [{nombre, precio, cantidad}]
 let cacheVentas = null;   // {sha, data:[...]}
@@ -319,6 +327,25 @@ function totalTicket() {
   return ticket.reduce((s, i) => s + i.precio * i.cantidad, 0);
 }
 
+// El grid se regenera entero en cada carga; el "+ Artículo libre" se
+// integra como un tile más para no diferenciarse visualmente del resto.
+function renderProductosGrid() {
+  const grid = document.getElementById("productos-grid");
+  grid.innerHTML =
+    CATALOGO.map(
+      (a) => `
+      <button class="producto-btn" data-nombre="${a.nombre}" data-precio="${a.precio}">
+        <span class="p-nombre">${a.nombre}</span>
+        <span class="p-precio">${a.precio} CHF</span>
+      </button>`
+    ).join("") +
+    `
+      <button id="btn-articulo-libre" class="producto-btn">
+        <span class="p-nombre">+ Artículo libre</span>
+        <span class="p-precio">Precio libre</span>
+      </button>`;
+}
+
 function renderTicket() {
   const lista = document.getElementById("ticket-lista");
   lista.innerHTML = "";
@@ -354,18 +381,22 @@ function renderTicket() {
   }
 }
 
-document.querySelectorAll(".producto-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const nombre = btn.dataset.nombre;
-    const precio = Number(btn.dataset.precio);
-    const existente = ticket.find((i) => i.nombre === nombre);
-    if (existente) {
-      existente.cantidad += 1;
-    } else {
-      ticket.push({ nombre, precio, cantidad: 1 });
-    }
-    renderTicket();
-  });
+document.getElementById("productos-grid").addEventListener("click", (e) => {
+  if (e.target.closest("#btn-articulo-libre")) {
+    mostrarModalLibre();
+    return;
+  }
+  const btn = e.target.closest(".producto-btn");
+  if (!btn) return;
+  const nombre = btn.dataset.nombre;
+  const precio = Number(btn.dataset.precio);
+  const existente = ticket.find((i) => i.nombre === nombre);
+  if (existente) {
+    existente.cantidad += 1;
+  } else {
+    ticket.push({ nombre, precio, cantidad: 1 });
+  }
+  renderTicket();
 });
 
 document.getElementById("ticket-lista").addEventListener("click", (e) => {
@@ -382,6 +413,44 @@ document.getElementById("ticket-lista").addEventListener("click", (e) => {
 document.getElementById("btn-vaciar-ticket").addEventListener("click", () => {
   ticket = [];
   renderTicket();
+});
+
+/* ---------------- Artículo libre (precio y texto libres) ---------------- */
+
+function ocultarModalLibre() {
+  document.getElementById("modal-libre").classList.add("oculto");
+}
+
+function mostrarModalLibre() {
+  document.getElementById("input-libre-nombre").value = "";
+  document.getElementById("input-libre-precio").value = "";
+  document.getElementById("libre-estado").textContent = "";
+  document.getElementById("libre-estado").className = "dividir-estado";
+  document.getElementById("modal-libre").classList.remove("oculto");
+  document.getElementById("input-libre-nombre").focus();
+}
+
+document.getElementById("btn-libre-cancelar").addEventListener("click", ocultarModalLibre);
+
+document.getElementById("btn-libre-confirmar").addEventListener("click", () => {
+  const nombre = document.getElementById("input-libre-nombre").value.trim();
+  const precio = Number(document.getElementById("input-libre-precio").value);
+  const estado = document.getElementById("libre-estado");
+
+  if (!nombre) {
+    estado.textContent = "Escribe una descripción.";
+    estado.className = "dividir-estado error";
+    return;
+  }
+  if (!Number.isFinite(precio) || precio === 0) {
+    estado.textContent = "Escribe un precio distinto de cero.";
+    estado.className = "dividir-estado error";
+    return;
+  }
+
+  ticket.push({ nombre, precio, cantidad: 1 });
+  renderTicket();
+  ocultarModalLibre();
 });
 
 async function registrarVenta(pagos, botonOrigen) {
@@ -1000,6 +1069,7 @@ document.getElementById("btn-probar-conexion").addEventListener("click", async (
 /* ---------------- Inicio ---------------- */
 
 rellenarFormularioAjustes();
+renderProductosGrid();
 renderTicket();
 
 if (!configCompleta()) {
