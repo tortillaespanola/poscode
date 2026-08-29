@@ -1032,5 +1032,26 @@
     ],
     "anulada": false,
     "cierre_id": null
+  },
+  {
+    "id": "v_39e568f1-0c61-4e1c-920c-267193077da6",
+    "fecha": "2026-08-29T16:50:10.723Z",
+    "items": [
+      {
+        "nombre": "Combo",
+        "precio": 10,
+        "cantidad": 2
+      }
+    ],
+    "total": 20,
+    "metodo_pago": "Twint",
+    "pagos": [
+      {
+        "metodo": "Twint",
+        "importe": 20
+      }
+    ],
+    "anulada": false,
+    "cierre_id": null
   }
 ]
